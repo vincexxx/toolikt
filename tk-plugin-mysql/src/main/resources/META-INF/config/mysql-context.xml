@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://shardingsphere.io/schema/shardingsphere/masterslave
+        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.vince"/>
+
+    <!-- db -->
+    <bean id="master" class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+
+        <property name="driverClassName" value="${master.jdbc.driverClassName}"/>
+        <property name="removeAbandoned" value="true"/>
+        <property name="removeAbandonedTimeout" value="180"/>
+        <property name="logAbandoned" value="true"/>
+        <property name="maxActive" value="4"/>
+        <property name="initialSize" value="4"/>
+        <property name="maxWait" value="-1"/>
+        <property name="minIdle" value="4"/>
+        <property name="url" value="${master.jdbc.url}"/>
+        <property name="username" value="${master.jdbc.username}"/>
+        <property name="password" value="${master.jdbc.password}"/>
+        <property name="testOnBorrow">
+            <value>false</value>
+        </property>
+        <property name="validationQuery">
+            <value>SELECT 1 FROM DUAL</value>
+        </property>
+        <property name="testWhileIdle">
+            <value>true</value>
+        </property>
+        <property name="testOnReturn">
+            <value>false</value>
+        </property>
+        <property name="validationQueryTimeout">
+            <value>1</value>
+        </property>
+        <property name="timeBetweenEvictionRunsMillis">
+            <value>30000</value>
+        </property>
+    </bean>
+
+    <!-- db -->
+    <bean id="slave1" class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+
+        <property name="driverClassName" value="${slave1.jdbc.driverClassName}"/>
+        <property name="removeAbandoned" value="true"/>
+        <property name="removeAbandonedTimeout" value="180"/>
+        <property name="logAbandoned" value="true"/>
+        <property name="maxActive" value="4"/>
+        <property name="initialSize" value="4"/>
+        <property name="maxWait" value="-1"/>
+        <property name="minIdle" value="4"/>
+        <property name="url" value="${slave1.jdbc.url}"/>
+        <property name="username" value="${slave1.jdbc.username}"/>
+        <property name="password" value="${slave1.jdbc.password}"/>
+        <property name="testOnBorrow">
+            <value>false</value>
+        </property>
+        <property name="validationQuery">
+            <value>SELECT 1 FROM DUAL</value>
+        </property>
+        <property name="testWhileIdle">
+            <value>true</value>
+        </property>
+        <property name="testOnReturn">
+            <value>false</value>
+        </property>
+        <property name="validationQueryTimeout">
+            <value>1</value>
+        </property>
+        <property name="timeBetweenEvictionRunsMillis">
+            <value>30000</value>
+        </property>
+    </bean>
+
+    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="master"
+                              slave-data-source-names="slave1"/>
+
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="masterSlaveDataSource"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="masterSlaveDataSource"/>
+        <property name="configLocation" value="classpath:/mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations">
+            <list>
+                <value>classpath*:mybatis/mapper/**/*Mapper.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+</beans>
