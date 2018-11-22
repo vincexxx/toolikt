@@ -7,6 +7,14 @@
     <groupId>com.vince</groupId>
     <artifactId>toolkit</artifactId>
     <version>3.0.0</version>
+    <modules>
+        <module>tk-base</module>
+        <module>tk-framework</module>
+        <module>tk-plugin-http</module>
+        <module>tk-plugin-mysql</module>
+        <module>tk-plugin-redis</module>
+        <module>tk-plugin-uid-generator</module>
+    </modules>
     <packaging>pom</packaging>
 
     <build>

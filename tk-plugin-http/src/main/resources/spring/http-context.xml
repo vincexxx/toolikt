@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.vince"/>
+
+    <!-- 配置 -->
+    <bean id="property" class="com.vince.toolkit.framework.property.MultiPropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:property/*.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--配置一个httpClient 连接池 -->
+    <bean id="poolingHttpClientConnectionManager"
+          class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
+        <!-- 最大链接数 -->
+        <property name="maxTotal" value="${http.maxTotal}"/>
+        <!-- 设置每个主机地址的并发数 -->
+        <property name="defaultMaxPerRoute" value="${http.defaultMaxPerRoute}"/>
+    </bean>
+
+    <!-- 生成httpClientBuilder(用于得到httpClient) -->
+    <bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder">
+        <!-- 注入连接池 -->
+        <property name="connectionManager" ref="poolingHttpClientConnectionManager"/>
+    </bean>
+
+
+    <!-- 定义HttpClient对象 -->
+    <bean id="closeableHttpClient" class="org.apache.http.impl.client.CloseableHttpClient"
+          factory-bean="httpClientBuilder" factory-method="build" scope="prototype">
+    </bean>
+
+
+    <bean id="requestConfigBuilder" class="org.apache.http.client.config.RequestConfig.Builder">
+        <!-- 创建连接的最长时间 -->
+        <property name="connectTimeout" value="${http.connectTimeout}"/>
+        <!-- 从连接池中获取到连接的最长时间 -->
+        <property name="socketTimeout" value="${http.socketTimeout}"/>
+        <!-- 数据传输的最长时间 -->
+        <property name="connectionRequestTimeout" value="${http.connectionRequestTimeout}"/>
+    </bean>
+
+    <bean class="org.apache.http.client.config.RequestConfig"
+          factory-bean="requestConfigBuilder" factory-method="build"></bean>
+
+    <!-- 清理无效链接 -->
+    <bean class="com.vince.toolkit.http.handle.IdleConnectionEvictor" destroy-method="shutdown">
+        <constructor-arg index="0" ref="poolingHttpClientConnectionManager"/>
+    </bean>
+
+
+</beans>
