@@ -33,12 +33,6 @@
 
         <dependency>
             <groupId>com.vince</groupId>
-            <artifactId>tk-base</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.vince</groupId>
             <artifactId>tk-framework</artifactId>
             <version>3.0.0</version>
         </dependency>

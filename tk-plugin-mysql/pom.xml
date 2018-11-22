@@ -13,15 +13,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>5.1.2.RELEASE</spring.version>
+        <jdk.version>1.8</jdk.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.vince</groupId>
-            <artifactId>tk-base</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
         <dependency>
             <groupId>com.vince</groupId>
             <artifactId>tk-framework</artifactId>
