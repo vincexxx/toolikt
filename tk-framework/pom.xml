@@ -11,7 +11,7 @@
     <artifactId>tk-framework</artifactId>
 
     <properties>
-        <spring.version>4.3.7.RELEASE</spring.version>
+        <spring.version>5.1.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.8</jdk.version>
     </properties>
