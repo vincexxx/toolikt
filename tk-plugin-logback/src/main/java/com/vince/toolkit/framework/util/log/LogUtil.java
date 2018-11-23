@@ -40,6 +40,10 @@ public class LogUtil {
         logger.error(msg);
     }
 
+    public static void error(Logger logger, String msg, Object... value) {
+        logger.error(msg, value);
+    }
+
     public static void error(Logger logger, String msg, Throwable t) {
         logger.error(msg, t);
     }

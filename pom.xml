@@ -14,6 +14,7 @@
         <module>tk-plugin-mysql</module>
         <module>tk-plugin-redis</module>
         <module>tk-plugin-uid-generator</module>
+        <module>tk-plugin-logback</module>
     </modules>
     <packaging>pom</packaging>
 
